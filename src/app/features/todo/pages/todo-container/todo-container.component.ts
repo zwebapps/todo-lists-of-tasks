@@ -1,41 +1,34 @@
 import { Component, OnInit } from '@angular/core';
-import { addTask } from '../../../../store/actions/todo.actions';
-import { TaskListComponent } from '../../components/task-list/task-list.component';
+import { addTask, addTodoList, loadTodoLists, toggleTaskStatus } from '../../../../store/actions/todo.actions';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
-import { selectTodoListById } from '../../../../store/selectors/todo.selectors';
+import { selectSelectedTodoList, selectTodoLists } from '../../../../store/selectors/todo.selectors';
 import { TodoList } from '../../models/todo.model';
-import { CommonModule } from '@angular/common';
-import { v4 as uuidv4 } from 'uuid';
+import { SharedModule } from '../../../../shared/shared.module';
 
 @Component({
   standalone: true,
   selector: 'app-todo-container',
-  imports: [TaskListComponent, CommonModule],
+  imports: [SharedModule],
   templateUrl: './todo-container.component.html',
   styleUrls: ['./todo-container.component.scss'],
 })
 export class TodoContainerComponent implements OnInit {
   selectedListId: string | null = null;
-  selectedList$: Observable<TodoList | undefined> | null = null;
+  todoLists$: Observable<TodoList[]> | null = null;
 
-  constructor(private store: Store) {}
-
-  ngOnInit(): void {
-    // Optionally, load a default list when the component initializes
-    // If needed, you can set a default selectedListId here or handle this later
+  constructor(private store: Store) {
+    this.store.dispatch(loadTodoLists());
   }
 
-  onSelectList(listId: string): void {
-    this.selectedListId = listId;
-    this.selectedList$ = this.store.select(selectTodoListById(listId));
+  ngOnInit(): void {
+    this.todoLists$ = this.store.select(selectTodoLists);
   }
 
   onAddTask(task: { title: string; description?: string }): void {
     if (!this.selectedListId) return;
 
     const taskWithCompleted = {
-      id: uuidv4(),
       ...task,
       completed: false,
     };
@@ -46,5 +39,23 @@ export class TodoContainerComponent implements OnInit {
         task: taskWithCompleted,
       })
     );
+  }
+  onSelectList(listId: string) {
+    this.selectedListId = listId;
+  }
+
+  get selectedList$(): Observable<TodoList | null> {
+    return this.store.select(selectSelectedTodoList);
+  }
+  onAddList(title: string) {
+    this.store.dispatch(addTodoList({ title }));
+  }
+
+  onToggleTask(taskId: string) {
+    if (!this.selectedListId) return;
+    this.store.dispatch(toggleTaskStatus({ listId: this.selectedListId, taskId }));
+  }
+  trimTitle (title:string) {
+   return title.trim().substring(0, 15);
   }
 }

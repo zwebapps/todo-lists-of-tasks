@@ -1,8 +1,9 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, of } from 'rxjs';
+import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { Task, TodoList } from '../models/todo.model';
+import { environment } from '../../../../environment';
 
 
 @Injectable({
@@ -11,37 +12,29 @@ import { Task, TodoList } from '../models/todo.model';
 export class TodoService {
   private todoLists$ = new BehaviorSubject<TodoList[]>([]);
 
-  private apiUrl = 'https://shrimo.com/fake-api';
+  private apiUrl = environment.apiUrl;
 
   private http = inject(HttpClient);
 
-  constructor() {}
-
-  // Fetch todo lists from the API
-  // getTodos(): Observable<TodoList[]> {
-  //   return this.http.get<TodoList[]>(this.apiUrl+'/todos').pipe(
-  //     map((response) => {
-  //       console.log('response', response)
-  //       this.todoLists$.next(response);
-  //       return response;
-  //     })
-  //   );
-  // }
-
-  getTodos(): Observable<TodoList[]> {
-    return of([
-      { id: '1', title: 'Work', tasks: [] },
-      { id: '2', title: 'Personal', tasks: [] }
-    ]);
+  constructor() {
+    console.log('apiUrl', this.apiUrl)
   }
 
+  getTodos(): Observable<TodoList[]> {
+    return this.http.get<TodoList[]>(this.apiUrl+'/lists').pipe(
+      map((response) => {
+        console.log('response', response)
+        this.todoLists$.next(response);
+        return response;
+      })
+    );
+  }
 
-  // Get current lists as observable
   get lists(): Observable<TodoList[]> {
     return this.todoLists$.asObservable();
   }
 
-  // Add a new list (this method sends data to the backend)
+
   addList(title: string): Observable<TodoList> {
     const newList = { id: crypto.randomUUID(), title, tasks: [] };
     return this.http.post<TodoList>(this.apiUrl, newList).pipe(
@@ -57,8 +50,8 @@ export class TodoService {
     );
   }
 
-  // Add a new task to an existing list (this sends the task to the backend)
-  addTask(listId: string, task: Task): Observable<Task> {
+
+  addTask(listId: string, task: Omit<Task, 'id'>): Observable<Task> {
     const taskUrl = `${this.apiUrl}/${listId}/tasks`;
     return this.http.post<Task>(taskUrl, task).pipe(
       map((addedTask) => {
@@ -78,33 +71,15 @@ export class TodoService {
     );
   }
 
-  // Toggle the task completion status in the backend
-  toggleTask(listId: string, taskIndex: number): Observable<Task> {
-    const list = this.todoLists$.value.find((l) => l.id === listId);
-    if (!list) {
-      return new Observable(); // List not found, return an empty observable
-    }
-    const task = list.tasks[taskIndex];
-    const taskUrl = `${this.apiUrl}/${listId}/tasks/${task.id}`;
-    const updatedTask = { ...task, completed: !task.completed };
-
-    return this.http.put<Task>(taskUrl, updatedTask).pipe(
-      map(() => {
-        const updatedLists = this.todoLists$.value.map((l) => {
-          if (l.id === listId) {
-            const updatedTasks = l.tasks.map((t, index) =>
-              index === taskIndex ? updatedTask : t
-            );
-            return { ...l, tasks: updatedTasks };
-          }
-          return l;
-        });
-        this.todoLists$.next(updatedLists);
+  toggleTask(taskId: string): Observable<Task> {
+    const taskUrl = `${this.apiUrl}/tasks/${taskId}/toggle`;
+    return this.http.patch<Task>(taskUrl, {}).pipe(
+      map((updatedTask: Task) => {
         return updatedTask;
       }),
-      catchError((error) => {
+      catchError(error => {
         console.error('Error toggling task:', error);
-        throw error;
+        return throwError(() => error);
       })
     );
   }

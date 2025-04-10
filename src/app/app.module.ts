@@ -29,7 +29,7 @@ import { TodoService } from './features/todo/services/todo.service';
     FormsModule,
     ReactiveFormsModule
   ],
-  providers: [],
+  providers: [AppComponent],
   bootstrap: []
 })
 export class AppModule { }

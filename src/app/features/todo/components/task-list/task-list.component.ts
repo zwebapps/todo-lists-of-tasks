@@ -5,12 +5,11 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs/internal/Observable';
-import { selectTodoListById } from '../../../../store/selectors/todo.selectors';
 import { addTask } from '../../../../store/actions/todo.actions';
 import { MatCardModule } from '@angular/material/card';
 import { MatListModule } from '@angular/material/list';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { v4 as uuidv4 } from 'uuid';
+import { selectSelectedTodoList } from '../../../../store/selectors/todo.selectors';
 
 @Component({
   selector: 'app-task-list',
@@ -36,21 +35,20 @@ export class TaskListComponent {
   newTaskTitle = '';
   newTaskDescription = '';
   selectedListId: string | null = null;
-  selectedList$: Observable<TodoList | undefined> | null = null;
+  selectedList$: Observable<TodoList | null> | null = null;
 
   constructor(private store: Store) {}
 
   onSelectList(listId: string): void {
     this.selectedListId = listId;
-    this.selectedList$ = this.store.select(selectTodoListById(listId));
+    this.selectedList$ = this.store.select(selectSelectedTodoList);
   }
 
 
   submitTask(): void {
-    if (!this.selectedListId || !this.newTaskTitle) return; // Check for missing values
+    if (!this.selectedListId || !this.newTaskTitle) return;
 
     const taskWithCompleted = {
-      id: uuidv4(),
       title: this.newTaskTitle,
       description: this.newTaskDescription,
       completed: false,

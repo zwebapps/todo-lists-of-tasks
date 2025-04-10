@@ -1,1 +1,7 @@
-<p>todo works!</p>
+<ng-container *ngIf="selectedList$ | async as selectedList">
+  <app-task-list
+    [tasks]="selectedList.tasks"
+    (addTask)="onAddTask($event)">
+  </app-task-list>
+</ng-container>
+

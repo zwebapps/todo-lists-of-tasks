@@ -1,6 +1,28 @@
-<ng-container *ngIf="selectedList$ | async as selectedList">
-  <app-task-list
-    [tasks]="selectedList.tasks"
-    (addTask)="onAddTask($event)">
-  </app-task-list>
-</ng-container>
+<mat-toolbar color="primary">Todo Lists</mat-toolbar>
+
+<div class="container">
+  <div class="grid" *ngIf="(todoLists$ | async) as lists; else noLists">
+    <mat-card *ngFor="let list of lists" (click)="onSelectList(list.id)" appearance="outlined">
+      <mat-card-header>
+        <mat-card-title
+        matTooltip="Info about the action" matTooltipPosition="top">{{ trimTitle(list.title) }}...</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <p>{{'list.description'}}</p>
+      </mat-card-content>
+      <mat-card-footer class="card-footer">
+        <mat-chip-set attr.aria-label="{{ list.title }}">
+          <mat-chip>{{ list?.totalTasks }} tasks</mat-chip>
+          <mat-chip color="primary">{{ list?.completedTasks }} completed</mat-chip>
+          <mat-chip>
+            <mat-icon class="arrow">arrow_forward</mat-icon>
+          </mat-chip>
+        </mat-chip-set>
+      </mat-card-footer>
+    </mat-card>
+  </div>
+  <ng-template #noLists>
+    <p class="empty">No Lists available.</p>
+  </ng-template>
+</div>
+
