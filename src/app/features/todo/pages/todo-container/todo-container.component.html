@@ -1,28 +1,48 @@
-<mat-toolbar color="primary">Todo Lists</mat-toolbar>
-
 <div class="container">
-  <div class="grid" *ngIf="(todoLists$ | async) as lists; else noLists">
-    <mat-card *ngFor="let list of lists" (click)="onSelectList(list.id)" appearance="outlined">
-      <mat-card-header>
-        <mat-card-title
-        matTooltip="Info about the action" matTooltipPosition="top">{{ trimTitle(list.title) }}...</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <p>{{'list.description'}}</p>
-      </mat-card-content>
-      <mat-card-footer class="card-footer">
-        <mat-chip-set attr.aria-label="{{ list.title }}">
-          <mat-chip>{{ list?.totalTasks }} tasks</mat-chip>
-          <mat-chip color="primary">{{ list?.completedTasks }} completed</mat-chip>
-          <mat-chip>
-            <mat-icon class="arrow">arrow_forward</mat-icon>
-          </mat-chip>
-        </mat-chip-set>
-      </mat-card-footer>
-    </mat-card>
+  <mat-toolbar color="primary">
+    <span class="toolbar-title">Todo Lists</span>
+    <span class="spacer"></span>
+
+    <button
+      mat-icon-button
+      matTooltip="Add List"
+      matTooltipPosition="below"
+      (click)="addList()"
+    >
+      <mat-icon>add</mat-icon>
+    </button>
+  </mat-toolbar>
+
+
+  <div class="list-container" *ngIf="(todoLists$ | async) as lists; else noLists">
+    <mat-accordion>
+      <mat-expansion-panel *ngFor="let list of lists" class="todo-card" (opened)="onPanelOpened(list)">
+        <mat-expansion-panel-header class="custom-header">
+          <div class="header-title">{{ trimTitle(list.title) }}...</div>
+          <div class="header-description">
+            <mat-chip-set attr.aria-label="{{ list.title }}">
+              <mat-chip class="warn">
+                <span>{{ list?.totalTasks }} </span>
+                <mat-icon>format_list_numbered</mat-icon>
+              </mat-chip>
+              <mat-chip color="primary">
+                <span>
+                  {{ list?.completedTasks }}
+                </span>
+                <mat-icon>check_box_marked</mat-icon>
+              </mat-chip>
+            </mat-chip-set>
+
+          </div>
+        </mat-expansion-panel-header>
+        <div class="panel-content">
+          <app-todo-detail *ngIf="selectedListId === list._id" [listId]="list._id" (toggleTaskStatus)="onToggleTask($event)"></app-todo-detail>
+        </div>
+      </mat-expansion-panel>
+    </mat-accordion>
   </div>
+
   <ng-template #noLists>
     <p class="empty">No Lists available.</p>
   </ng-template>
 </div>
-

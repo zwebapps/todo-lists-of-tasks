@@ -1,19 +1,14 @@
-export interface TodoState {
-  todoLists: TodoList[];
-  selectedList: TodoList | null;
-  loading: boolean;
-  error: string | null;
-}
+
 
 export interface Task {
-  id: string;
+  _id: string | undefined;
   title: string;
   description?: string;
   completed: boolean;
 }
 
 export interface TodoList {
-  id: string;
+  _id: string | undefined;
   title: string;
   totalTasks?: number;
   completedTasks?: number;

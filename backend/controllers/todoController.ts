@@ -1,7 +1,11 @@
 import { Request, Response } from 'express';
 import TodoList from '../models/TodoList';
 import Task from '../models/Task';
-import { ObjectId } from 'mongodb';
+// import { ObjectId } from 'mongodb';
+import { ObjectId } from 'bson';
+import mongoose from 'mongoose';
+import { connectDB, dbConnection } from '../db';
+connectDB
 
 export const createTodoList = async (req: Request, res: Response) => {
   try {
@@ -50,7 +54,6 @@ export const getTodoLists = async (_req: Request, res: Response) => {
         completedTasks
       };
     }));
-    console.log(data)
     res.status(200).json(data);
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch todo lists' });
@@ -109,21 +112,29 @@ export const getTasksByList = async (req: Request, res: Response) => {
   }
 };
 
+
 export const toggleTaskCompletion = async (req: Request, res: Response) => {
   const { taskId } = req.params;
 
   try {
-    const task = await Task.findById({_id: new ObjectId(taskId)});
+    const { db } = mongoose.connection;
+    if(db) {
+      const task = await db.collection('tasks').findOne({ _id: new ObjectId(taskId) });
+      if (!task) {
+        return res.status(404).json({ error: 'Task not found' });
+      }
 
-    if (!task) {
-      return res.status(404).json({ error: 'Task not found' });
+      const updatedTask = await db.collection('tasks').findOneAndUpdate(
+        { _id: new ObjectId(taskId) },
+        { $set: { completed: !task.completed } },
+        { returnDocument: 'after' }
+      );
+      res.status(200).json(task);
+    } else {
+      return res.status(404).json({ error: 'Task Connection is invalide' });
     }
-
-    task.completed = !task.completed;
-    await task.save();
-
-    res.status(200).json(task);
   } catch (error) {
+    console.error('Error toggling task completion:', error);
     res.status(500).json({ error: 'Failed to toggle task completion' });
   }
 };

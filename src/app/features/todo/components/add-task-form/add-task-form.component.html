@@ -1,0 +1,35 @@
+<h2 mat-dialog-title class="dialog-title">Add New Task</h2>
+<mat-dialog-content class="mat-typography">
+  <form [formGroup]="taskForm" (submit)="submitTask()" class="task-form">
+
+    <!-- Title -->
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Title</mat-label>
+      <input matInput formControlName="title" />
+      <mat-error *ngIf="f['title'].hasError('required')">
+        Title is required.
+      </mat-error>
+      <mat-error *ngIf="f['title'].hasError('minlength')">
+        Title must be at least 3 characters.
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Description -->
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Description</mat-label>
+      <textarea matInput formControlName="description"></textarea>
+    </mat-form-field>
+
+    <!-- Completed -->
+    <mat-checkbox formControlName="completed">Completed</mat-checkbox>
+
+    <!-- Submit -->
+    <div class="button-container">
+      <button mat-raised-button color="primary" type="submit" class="submit-button">Save Task</button>
+    </div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close class="install-button">Close</button>
+</mat-dialog-actions>

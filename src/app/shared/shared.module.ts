@@ -10,7 +10,15 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatChipsModule } from '@angular/material/chips';
 import {MatGridListModule} from '@angular/material/grid-list';
-
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import {MatDialogModule} from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatInputModule } from '@angular/material/input';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import {MatExpansionModule} from '@angular/material/expansion';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 
 
@@ -24,11 +32,20 @@ import {MatGridListModule} from '@angular/material/grid-list';
     MatButtonModule,
     MatProgressSpinnerModule,
     MatProgressBarModule,
-    CommonModule,
+    MatInputModule,
+    MatSnackBarModule,
     MatChipsModule,
     RouterModule,
     MatListModule,
-    MatGridListModule
+    MatGridListModule,
+    MatSidenavModule,
+    MatCheckboxModule,
+    MatDialogModule,
+    MatFormFieldModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatExpansionModule,
+    MatTooltipModule,
   ],
   exports: [
     CommonModule,
@@ -38,11 +55,19 @@ import {MatGridListModule} from '@angular/material/grid-list';
     MatButtonModule,
     MatProgressSpinnerModule,
     MatProgressBarModule,
-    CommonModule,
     MatChipsModule,
     RouterModule,
     MatListModule,
-    MatGridListModule
+    MatGridListModule,
+    MatSidenavModule,
+    MatCheckboxModule,
+    MatDialogModule,
+    MatFormFieldModule,
+    ReactiveFormsModule,
+    MatInputModule,
+    MatSnackBarModule,
+    MatExpansionModule,
+    MatTooltipModule
   ],
 })
 export class SharedModule { }

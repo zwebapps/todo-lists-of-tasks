@@ -1,0 +1,90 @@
+::ng-deep .mat-dialog-container {
+  width: 600px;
+  position: static;
+  height: 515px;
+}
+
+.dialog-title {
+  font-size: 24px;
+  font-weight: 600;
+  text-align: center;
+  color: #3f51b5; /* Use a primary color */
+}
+
+.mat-dialog-content {
+  padding: 20px;
+}
+
+.task-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px; /* Space out the form fields */
+}
+
+.full-width {
+  width: 100%;
+}
+
+.mat-form-field {
+  margin-bottom: 20px; /* Add space between form fields */
+}
+
+.mat-checkbox {
+  margin-top: 10px; /* Space between checkbox and other fields */
+}
+
+.button-container {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.submit-button {
+  padding: 10px 20px;
+  font-size: 16px;
+}
+
+.mat-dialog-actions {
+  padding: 20px;
+}
+
+.cancel-button,
+.install-button {
+  padding: 10px 20px;
+  font-size: 16px;
+}
+
+.cancel-button {
+  margin-right: 10px;
+}
+
+.install-button {
+  background-color: #4caf50;
+  color: white;
+}
+
+.install-button:hover {
+  background-color: #388e3c;
+}
+
+
+
+
+
+.button-container {
+  display: flex;
+  justify-content: center; /* Center the Save Task button */
+}
+
+.submit-button {
+  width: 100%; /* Make Save Task button fill the width of the form */
+}
+
+.cancel-button,
+.install-button {
+  margin-left: 8px;
+}
+
+.install-button {
+  background-color: #f5f5f5;
+  color: #333;
+}

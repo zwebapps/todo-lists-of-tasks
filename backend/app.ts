@@ -1,10 +1,10 @@
-import express, { NextFunction } from 'express';
+import express from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import todoRoutes from './routes/todoRoutes';
 import morgan from 'morgan';
 import cors from 'cors';
-
+import { connectDB } from './db';
 dotenv.config();
 
 const app = express();
@@ -17,14 +17,16 @@ app.use(morgan('dev'));
 
 app.use('/api', todoRoutes);
 
-const MONGO_URI=`mongodb://${process.env.MONGO_ROOT_USERNAME}:${process.env.MONGO_ROOT_PASSWORD}@localhost:${process.env.MONGO_PORT}/${process.env.MONGO_DATABASE}?authSource=admin`;
-console.info("================================");
-console.info("MONGO_URI => ", MONGO_URI);
-console.info("================================");
-
-mongoose.connect(MONGO_URI || '', {})
-  .then(() => console.log('MongoDB connected'))
-  .catch(err => console.error('MongoDB connection error:', err));
+// Connect to the database
+connectDB().then(() => {
+  // Start your server after successful connection
+  const PORT = process.env.PORT || 3000;
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+}).catch((err: any) => {
+  console.error('Failed to connect to database. Shutting down.', err);
+});
 
 export default app;
 

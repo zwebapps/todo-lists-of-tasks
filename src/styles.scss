@@ -1,18 +1,19 @@
-/* You can add global styles to this file, and also import other style files */
-// Import Angular Material theming functions
-@use '@angular/material' as mat;
+// /* You can add global styles to this file, and also import other style files */
+// @use '@angular/material' as mat;
 
-// Define your primary, accent, and warn color palettes
-$primary: mat.define-palette(mat.$indigo-palette);
-$accent: mat.define-palette(mat.$pink-palette, 600, 300, 900);
-$warn: mat.define-palette(mat.$red-palette);
+// html {
+//   color-scheme: light dark;
+//   @include mat.theme((
+//     accent: mat.$green-palette,
+//     warn: mat.$red-palette,
+//     is-dark: true,
+//     primary: mat.$violet-palette,
+//     typography: Roboto,
+//     density: 0
+//   ));
+// }
 
-// Define the overall theme
-$theme: mat.define-light-theme($primary, $accent, $warn);
-
-// Apply the theme to all Angular Material components
-@include mat.all-component-themes($theme);
-
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap');
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

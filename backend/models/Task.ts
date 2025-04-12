@@ -9,7 +9,6 @@ export interface ITask extends Document {
   updatedAt: Date;
 }
 
-
 const taskSchema = new mongoose.Schema({
   title: {
     type: String,
@@ -30,4 +29,5 @@ const taskSchema = new mongoose.Schema({
     default: Date.now,
   },
 });
+
 export default mongoose.model<ITask>('Task', taskSchema);

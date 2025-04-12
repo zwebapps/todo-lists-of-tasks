@@ -11,6 +11,7 @@ import { environment } from '../../../../environment';
 })
 export class TodoService {
   private todoLists$ = new BehaviorSubject<TodoList[]>([]);
+  private tasks$: BehaviorSubject<Task[]> = new BehaviorSubject<Task[]>([]);
 
   private apiUrl = environment.apiUrl;
 
@@ -34,6 +35,15 @@ export class TodoService {
     return this.todoLists$.asObservable();
   }
 
+  getTasks(listId: string) : Observable<Task[]> {
+    return this.http.get<Task[]>(this.apiUrl+`/lists/${listId}/tasks`).pipe(
+      map((response) => {
+        console.log('response', response)
+        this.tasks$.next(response);
+        return response;
+      })
+    );
+  }
 
   addList(title: string): Observable<TodoList> {
     const newList = { id: crypto.randomUUID(), title, tasks: [] };
@@ -51,12 +61,12 @@ export class TodoService {
   }
 
 
-  addTask(listId: string, task: Omit<Task, 'id'>): Observable<Task> {
+  addTask(listId: string, task: Omit<Task, '_id'>): Observable<Task> {
     const taskUrl = `${this.apiUrl}/${listId}/tasks`;
     return this.http.post<Task>(taskUrl, task).pipe(
       map((addedTask) => {
         const updatedLists = this.todoLists$.value.map((list) => {
-          if (list.id === listId) {
+          if (list?._id === listId) {
             return { ...list, tasks: [...list.tasks, addedTask] };
           }
           return list;

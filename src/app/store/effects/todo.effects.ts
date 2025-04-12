@@ -16,6 +16,10 @@ import {
   toggleTaskStatus,
   addTaskSuccess,
   addTaskFailure,
+  loadTasks,
+  loadTasksSuccess,
+  toggleTaskCompletionSuccess,
+  toggleTaskCompletionFailure,
 } from '../actions/todo.actions';
 import { TodoService } from '../../features/todo/services/todo.service';
 import { EMPTY, of } from 'rxjs';
@@ -39,6 +43,20 @@ export class TodoEffects {
       )
     );
   });
+
+  loadTasks$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(loadTasks),
+      switchMap((action) =>
+        this.todoService.getTasks(action.listId).pipe(
+          map(tasks => loadTasksSuccess({tasks}),
+          catchError((error) =>
+            of(loadTodoListsFailure({ error: error.message }))
+          )
+        )
+      )
+    ))
+  })
 
   loadTodos$ = createEffect(() => {
     return this.actions$.pipe(
@@ -84,10 +102,16 @@ export class TodoEffects {
       ofType(toggleTaskStatus),
       mergeMap((action) =>
         this.todoService.toggleTask(action.taskId).pipe(
-          map(() => loadTodoLists()),
-          catchError((error) => of(loadTodoListsFailure({ error })))
+          map((task) => {
+            return toggleTaskCompletionSuccess({
+              taskId: action.taskId,
+              completed: task.completed,
+            });
+          }),
+          catchError((error) => of(toggleTaskCompletionFailure({ error })))
         )
       )
     )
   );
+
 }
