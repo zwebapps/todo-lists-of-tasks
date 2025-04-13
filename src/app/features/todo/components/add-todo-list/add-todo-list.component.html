@@ -1,0 +1,26 @@
+<h2 mat-dialog-title class="dialog-title">Add New Todolist</h2>
+<mat-dialog-content class="mat-typography">
+  <form [formGroup]="todolistForm" (submit)="submitTask()" class="task-form">
+
+    <!-- Title -->
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Title</mat-label>
+      <input matInput formControlName="title" />
+      <mat-error *ngIf="f['title'].hasError('required')">
+        Title is required.
+      </mat-error>
+      <mat-error *ngIf="f['title'].hasError('minlength')">
+        Title must be at least 3 characters.
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Submit -->
+    <div class="button-container">
+      <button mat-raised-button color="primary" type="submit" class="submit-button"> {{isEditMode ? 'Update Todolist' : 'Save Todolist'}}</button>
+    </div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close class="install-button">Close</button>
+</mat-dialog-actions>

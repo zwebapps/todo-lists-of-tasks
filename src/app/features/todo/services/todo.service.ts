@@ -10,6 +10,7 @@ import { environment } from '../../../../environment';
   providedIn: 'root'
 })
 export class TodoService {
+
   private todoLists$ = new BehaviorSubject<TodoList[]>([]);
   private selectedList$ = new BehaviorSubject<TodoList>({} as TodoList);
   private tasks$: BehaviorSubject<Task[]> = new BehaviorSubject<Task[]>([]);
@@ -47,12 +48,22 @@ export class TodoService {
   }
 
   addList(title: string): Observable<TodoList> {
-    const newList = { id: crypto.randomUUID(), title, tasks: [] };
-    return this.http.post<TodoList>(this.apiUrl, newList).pipe(
+    const taskUrl = `${this.apiUrl}/lists`;
+    const newList = { title, tasks: [], totalTasks: 0, completedTasks: 0 };
+    return this.http.post<TodoList>(taskUrl, newList).pipe(
       map((createdList) => {
-        const updatedLists = [...this.todoLists$.value, createdList];
-        this.todoLists$.next(updatedLists);
-        return createdList;
+        debugger
+        const normalizedList: TodoList = {
+          ...createdList,
+          tasks: createdList.tasks ?? [],
+          completedTasks: 0,
+          totalTasks: 0,
+        };
+
+      const updatedLists = [...this.todoLists$.value, normalizedList];
+      this.todoLists$.next(updatedLists);
+
+      return normalizedList;
       }),
       catchError((error) => {
         console.error('Error adding todo list:', error);
@@ -85,7 +96,6 @@ export class TodoService {
 
 
   toggleTask(taskId: string): Observable<Task> {
-    console.log('toggleTask', taskId)
     const taskUrl = `${this.apiUrl}/tasks/${taskId}/toggle`;
     return this.http.patch<Task>(taskUrl, {}).pipe(
       map((updatedTask: Task) => {
@@ -107,6 +117,14 @@ export class TodoService {
         return throwError(() => error);
       })
     );
+  }
+
+  deleteList(listId: string): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/lists/${listId}`);
+  }
+
+  editList(id: string, updatedData: Partial<TodoList>): Observable<TodoList> {
+    return this.http.put<TodoList>(`${this.apiUrl}/lists/${id}`, updatedData);
   }
 
 

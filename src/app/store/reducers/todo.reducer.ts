@@ -1,11 +1,9 @@
 import { createReducer, on } from '@ngrx/store';
 import { v4 as uuidv4 } from 'uuid';
 import {
-  addTodoList,
   addTask,
   toggleTaskStatus,
   loadTodoListsSuccess,
-  updateTask,
   setSelectedTodoList,
   loadTodoListsFailure,
   loadTasksSuccess,
@@ -15,6 +13,10 @@ import {
   deleteTask,
   deleteTaskSuccess,
   updateTaskSuccess,
+  addTodoListSuccess,
+  deleteTodoListSuccess,
+  editTodoListSuccess,
+  updateTodoListSuccess,
 } from '../actions/todo.actions';
 import { Task, TodoList } from './../../features/todo/models/todo.model';
 
@@ -36,7 +38,6 @@ export const todoReducer = createReducer(
   initialState,
   // Load Todo Lists success
   on(loadTodoListsSuccess, (state, { todoLists }) => {
-    console.log('loadTodoListsSuccess',state, todoLists)
    return  {
     ...state,
     todoLists: todoLists.map(list => ({
@@ -48,8 +49,12 @@ export const todoReducer = createReducer(
     }
   }),
 
-
-
+  on(updateTodoListSuccess, (state, { updatedList }) => ({
+    ...state,
+    todoLists: state.todoLists.map(list =>
+      list._id === updatedList._id ? { ...list, title: updatedList.title } : list
+    ),
+  })),
 
   // Load Todo Lists failure
   on(loadTodoListsFailure, (state, { error }) => ({
@@ -58,11 +63,25 @@ export const todoReducer = createReducer(
     error,
   })),
 
-  // Add a new Todo List
-  on(addTodoList, (state, { title }) => ({
+  on(addTodoListSuccess, (state, { newList }) => ({
     ...state,
-    todoLists: [...state.todoLists, { _id: uuidv4(), title, tasks: [] }],
+    todoLists: [...state.todoLists, newList]
   })),
+
+  on(deleteTodoListSuccess, (state, { listId }) => ({
+    ...state,
+    todoLists: listId?  state.todoLists.filter(list => list._id !== listId) : state.todoLists
+  })),
+
+
+  on(editTodoListSuccess, (state, { updatedList }) => ({
+    ...state,
+    todoLists: state.todoLists.map(list =>
+      list._id === updatedList._id ? updatedList : list
+    )
+  })),
+
+
 
   // Add a new task to a Todo List
   on(addTask, (state, { listId, task }) => {
@@ -135,29 +154,6 @@ export const todoReducer = createReducer(
     };
   }),
 
-
-  // on(updateTaskSuccess, (state, { updatedTask }) => {
-  //   if (!state.selectedList) return state;
-
-  //   const updateTasks = (tasks: Task[]) =>
-  //     tasks.map(task => task._id === updatedTask._id ? { ...task, ...updatedTask } : task);
-
-  //   const updatedSelectedList = {
-  //     ...state.selectedList,
-  //     tasks: updateTasks(state.selectedList.tasks),
-  //     completedTasks: updateTasks(state.selectedList.tasks).filter(t => t.completed).length,
-  //   };
-
-  //   return {
-  //     ...state,
-  //     selectedList: updatedSelectedList,
-  //     todoLists: state.todoLists.map(list =>
-  //       list._id === updatedSelectedList._id
-  //         ? { ...list, ...updatedSelectedList }
-  //         : list
-  //     )
-  //   };
-  // }),
 
   on(updateTaskSuccess, (state, { updatedTask }) => {
     const updateTaskInList = (list: TodoList) => ({

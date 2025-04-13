@@ -12,7 +12,7 @@ export class DialogService {
   open<T, D = any>(component: ComponentType<T>, data?: D, width: string = '500px') {
     return this.dialog.open(component, {
       width,
-      data
+      ...data
     });
   }
 

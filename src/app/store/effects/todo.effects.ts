@@ -28,6 +28,10 @@ import {
   updateTaskSuccess,
   updateTaskFailure,
   setSelectedTodoListById,
+  addTodoListSuccess,
+  updateTodoList,
+  updateTodoListSuccess,
+  updateTodoListFailure,
 } from '../actions/todo.actions';
 import { TodoService } from '../../features/todo/services/todo.service';
 import { EMPTY, of } from 'rxjs';
@@ -38,6 +42,8 @@ export class TodoEffects {
   private actions$ = inject(Actions);
   private todoService = inject(TodoService);
   private snackbar = inject(SnackbarService)
+
+
 
   // Effect to load Todo Lists
   loadTodoLists$ = createEffect(() => {
@@ -86,12 +92,33 @@ export class TodoEffects {
       ofType(addTodoList),
       mergeMap((action) =>
         this.todoService.addList(action.title).pipe(
-          map((todoList) => loadTodoListsSuccess({ todoLists: [todoList] })),
+          map((todoList) => addTodoListSuccess({ newList: todoList })),
           catchError((error) => of(loadTodoListsFailure({ error })))
         )
       )
     );
   });
+
+
+  updateTodoList$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(updateTodoList),
+      switchMap(({ listId, title }) =>
+        this.todoService.editList(listId, { title }).pipe(
+          map(() => {
+            this.snackbar.showFeedback('Todo List updated successfully', 'success');
+            return loadTodoLists();
+          }),
+          catchError((error) => {
+            this.snackbar.showFeedback('Error updating Todo List', 'error');
+            return of(updateTaskFailure({ error: error.message }));
+          })
+        )
+      )
+    )
+  );
+
+
 
   addTaskToList$ = createEffect(() =>
     this.actions$.pipe(
@@ -181,6 +208,7 @@ export class TodoEffects {
       )
     )
   );
+  dialogRef: any;
 
 
 

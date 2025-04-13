@@ -1,14 +1,14 @@
 import { Request, Response } from 'express';
 import TodoList from '../models/TodoList';
 import Task from '../models/Task';
-// import { ObjectId } from 'mongodb';
-import { ObjectId } from 'bson';
+import { ObjectId } from 'mongodb';
+// import { ObjectId } from 'bson';
 import mongoose from 'mongoose';
 import { connectDB, dbConnection } from '../db';
-connectDB
 
 export const createTodoList = async (req: Request, res: Response) => {
   try {
+    console.log('creating task')
     const { title } = req.body;
     const list = await TodoList.create({ title });
     res.status(201).json(list);
@@ -31,13 +31,14 @@ export const updateTodoList = async (req: Request, res: Response) => {
   try {
     const { listId } = req.params;
     const { title } = req.body;
-    const updatedList = await TodoList.findByIdAndUpdate(
-      new ObjectId(listId),
-      { title },
+    const updatedList = await TodoList.findOneAndUpdate(
+      { _id: new ObjectId(listId)},
+      { title: title },
       { new: true }
     );
     res.status(200).json(updatedList);
   } catch (error) {
+    console.log(error)
     res.status(500).json({ error: 'Failed to update todo list' });
   }
 };
@@ -119,11 +120,11 @@ export const toggleTaskCompletion = async (req: Request, res: Response) => {
   try {
     const { db } = mongoose.connection;
     if(db) {
-      const task = await db.collection('tasks').findOne({ _id: new ObjectId(taskId) });
+      const task = await Task.findOne({ _id: new ObjectId(taskId) });
       if (!task) {
         return res.status(404).json({ error: 'Task not found' });      }
 
-      const updatedTask = await db.collection('tasks').findOneAndUpdate(
+      const updatedTask = await Task.findOneAndUpdate(
         { _id: new ObjectId(taskId) },
         { $set: { completed: !task.completed } },
         { returnDocument: 'after' }

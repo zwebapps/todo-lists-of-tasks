@@ -14,6 +14,18 @@ export const setTasksForSelectedList = createAction('[Todo] Set Tasks for Select
 export const setSelectedTodoListById = createAction('[Todo] Set Selected Todo List By ID', props<{ listId: string }>());
 
 export const addTodoList = createAction('[Todo] Add Todo List', props<{ title: string }>());
+export const addTodoListSuccess = createAction('[Todo] Add Todo List Success', props<{ newList: TodoList }>());
+export const addTodoListFailure = createAction('[Todo] Add Todo List Success', props<{ error: string }>());
+
+export const updateTodoList = createAction('[Todo] Update Todo List', props<{listId: string, title: string }>());
+export const updateTodoListSuccess = createAction('[Todo] Update Todo List Success', props<{ updatedList: TodoList }>());
+
+export const updateTodoListFailure = createAction('[Todo] Update Todo List Failure', props<{ error: string }>());
+export const deleteTodoListSuccess = createAction('[Todo] Delete Todo List Success', props<{ listId: string }>());
+export const editTodoListSuccess = createAction('[Todo] Edit Todo List Success', props<{ updatedList: TodoList }>());
+
+
+
 export const addTask = createAction('[Todo] Add Task', props<{ listId: string, task: Omit<Task, '_id'> }>());
 export const addTaskSuccess = createAction('[Todo] Add Task Success', props<{ listId: string, task: Task }>());
 export const addTaskFailure = createAction('[Todo] Add Task Failure', props<{ error: string }>())
