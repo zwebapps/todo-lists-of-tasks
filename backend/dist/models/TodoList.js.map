@@ -1,0 +1,1 @@
+{"version":3,"file":"TodoList.js","sourceRoot":"","sources":["../../models/TodoList.ts"],"names":[],"mappings":";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;AAAA,qDAAsD;AAQtD,MAAM,cAAc,GAAW,IAAI,iBAAM,CAAC;IACxC,KAAK,EAAE,EAAE,IAAI,EAAE,MAAM,EAAE,QAAQ,EAAE,IAAI,EAAE;CACxC,EAAE,EAAE,UAAU,EAAE,IAAI,EAAE,CAAC,CAAC;AAEzB,kBAAe,kBAAQ,CAAC,KAAK,CAAY,UAAU,EAAE,cAAc,CAAC,CAAC"}
