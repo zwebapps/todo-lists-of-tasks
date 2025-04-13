@@ -1,4 +1,4 @@
-import { inject, Inject, Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import {
   catchError,
@@ -6,6 +6,7 @@ import {
   map,
   mergeMap,
   switchMap,
+  tap,
 } from 'rxjs/operators';
 import {
   loadTodoLists,
@@ -20,14 +21,23 @@ import {
   loadTasksSuccess,
   toggleTaskCompletionSuccess,
   toggleTaskCompletionFailure,
+  deleteTask,
+  deleteTaskSuccess,
+  deleteTaskFailure,
+  updateTask,
+  updateTaskSuccess,
+  updateTaskFailure,
+  setSelectedTodoListById,
 } from '../actions/todo.actions';
 import { TodoService } from '../../features/todo/services/todo.service';
 import { EMPTY, of } from 'rxjs';
+import { SnackbarService } from '../../shared/services/SnakeBarService';
 
 @Injectable()
 export class TodoEffects {
   private actions$ = inject(Actions);
   private todoService = inject(TodoService);
+  private snackbar = inject(SnackbarService)
 
   // Effect to load Todo Lists
   loadTodoLists$ = createEffect(() => {
@@ -114,5 +124,66 @@ export class TodoEffects {
       )
     )
   );
+
+  deleteTask$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(deleteTask),
+      mergeMap(({ taskId }) =>
+        this.todoService.deleteTask(taskId).pipe(
+          map(() => deleteTaskSuccess({ taskId })),
+          catchError((error) => of(deleteTaskFailure({ error })))
+        )
+      )
+    )
+  );
+
+  updateTask$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(updateTask),
+      switchMap(({ taskId, title, description, completed }) =>
+        this.todoService.updateTask(taskId, { title, description, completed }).pipe(
+          map(updatedTask => updateTaskSuccess({ updatedTask })),
+          catchError(error => of(updateTaskFailure({ error: error.message })))
+        )
+      )
+    )
+  );
+
+
+  updateTaskSuccess$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(updateTaskSuccess),
+      tap(() => {
+        this.snackbar.showFeedback('Task updated successfully', 'success');
+      })
+    ),
+    { dispatch: false }
+  );
+
+  updateTaskFailure$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(updateTaskFailure),
+      tap(({ error }) => {
+        this.snackbar.showFeedback(`Error: ${error}`, 'error');
+      })
+    ),
+    { dispatch: false }
+  );
+
+  loadTasksForSelectedList$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(setSelectedTodoListById),
+      switchMap(({ listId }) =>
+        this.todoService.getTasks(listId).pipe(
+          map(tasks => loadTasksSuccess({ tasks })),
+          catchError(error => of(loadTodoListsFailure({ error: error.message })))
+        )
+      )
+    )
+  );
+
+
+
+
 
 }

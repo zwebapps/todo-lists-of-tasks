@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { catchError, map, tap } from 'rxjs/operators';
 import { Task, TodoList } from '../models/todo.model';
 import { environment } from '../../../../environment';
 
@@ -67,7 +67,6 @@ export class TodoService {
     return this.http.post<Task>(taskUrl, task).pipe(
       map((addedTask) => {
         const currentList = this.selectedList$.value;
-        console.log('selectedList$',this.selectedList$.value)
         if (currentList && currentList._id === listId) {
           const updatedList = {
             ...currentList,
@@ -78,7 +77,7 @@ export class TodoService {
         return addedTask;
       }),
       catchError((error) => {
-        console.error('❌ Error adding task:', error);
+        console.error('Error adding task:', error);
         throw error;
       })
     );
@@ -98,4 +97,31 @@ export class TodoService {
       })
     );
   }
+
+  deleteTask(taskId: string): Observable<{ success: boolean; taskId: string }> {
+    const taskUrl = `${this.apiUrl}/tasks/${taskId}`;
+    return this.http.delete<{ success: boolean; taskId: string }>(taskUrl).pipe(
+      tap(() => console.log('Deleted Task ID:', taskId)),
+      catchError((error) => {
+        console.error('Error deleting task:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+
+  updateTask(taskId: string, taskData: Partial<Task>): Observable<Task> {
+    const taskUrl = `${this.apiUrl}/tasks/${taskId}`;
+    return this.http.put<Task>(taskUrl, taskData).pipe(
+      map((updatedTask: Task) => updatedTask),
+      catchError(error => {
+        console.error('Error updating task:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+
+
+
 }

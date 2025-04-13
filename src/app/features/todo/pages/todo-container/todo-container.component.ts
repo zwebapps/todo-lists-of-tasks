@@ -1,9 +1,9 @@
 import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
-import { addTask, addTodoList, clearSelectedList, loadTodoLists, setSelectedTodoList, toggleTaskStatus } from '../../../../store/actions/todo.actions';
+import { addTask, addTodoList, clearSelectedList, deleteTask, loadTodoLists, setSelectedTodoList, toggleTaskStatus } from '../../../../store/actions/todo.actions';
 import { Store } from '@ngrx/store';
 import { combineLatest, map, Observable, take } from 'rxjs';
 import { selectSelectedTodoList, selectTodoLists } from '../../../../store/selectors/todo.selectors';
-import { TodoList } from '../../models/todo.model';
+import { Task, TodoList } from '../../models/todo.model';
 import { SharedModule } from '../../../../shared/shared.module';
 import { Router } from '@angular/router';
 import { TodoDetailComponent } from "../../components/todo-detail/todo-detail.component";
@@ -50,7 +50,6 @@ export class TodoContainerComponent implements OnInit {
 
 
   onPanelClosed(list: TodoList) {
-    console.log('closes on panel closed list', list)
     this.store.dispatch(clearSelectedList());
   }
 
@@ -87,14 +86,24 @@ export class TodoContainerComponent implements OnInit {
     this.selectedList$.subscribe(res => console.log('res',res))
     this. snackbar.showFeedback('Task status updated successfully', "success");
   }
+  onDeleteTask(taskId: string){
+    console.log('Delete task', taskId);
+    this.store.dispatch(deleteTask({ taskId }));
+  }
 
-  getCompletedTasksCount(selectedList: TodoList | null, list: TodoList): number {
+  patchTasksCount(selectedList: TodoList | null): number {
+      return selectedList?.tasks?.length ?? 0;
+  }
+  patchCompletedTasksCount(selectedList: TodoList | null, list: TodoList): number {
     if (selectedList && selectedList._id === list._id) {
       return selectedList.completedTasks ?? 0;
     }
-    return list.completedTasks ?? 0;
+    return list?.completedTasks ?? 0;
   }
 
+  trackByListId(index: number, list: TodoList) {
+    return list._id;
+  }
   trimTitle (title:string) {
    return shortendString(title);
   }

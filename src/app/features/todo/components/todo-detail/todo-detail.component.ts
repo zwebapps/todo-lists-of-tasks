@@ -9,6 +9,7 @@ import { ActivatedRoute, Route } from '@angular/router';
 import { AddTaskFormComponent } from '../add-task-form/add-task-form.component';
 import { MatDialog } from '@angular/material/dialog';
 import { shortendString } from '../../../../shared/commonUtils';
+import { ConfirmDialogComponent } from '../../../../shared/confirm-dialog/confirm-dialog.component';
 
 @Component({
   standalone: true,
@@ -21,6 +22,7 @@ import { shortendString } from '../../../../shared/commonUtils';
 export class TodoDetailComponent implements OnInit, OnChanges, DoCheck {
   @Input() listId: string | null = null;
   @Output() toggleTaskStatus = new EventEmitter<string>();
+  @Output() delTaskHandler = new EventEmitter<string>();
   selectedListId: string | null = null;
   selectedTaskList$: Observable<TodoList | null> | null = null;
   modalVisible: any
@@ -87,11 +89,11 @@ export class TodoDetailComponent implements OnInit, OnChanges, DoCheck {
      return shortendString(title);
     }
   deleteTask(task: Task) {
-    console.log(task)
+    this.confirmAction(task);
   }
 
   editTask(task: Task) {
-    console.log(task)
+    this.openTaskDialog(task);
   }
 
   onToggleTask(task: Task) {
@@ -110,28 +112,44 @@ export class TodoDetailComponent implements OnInit, OnChanges, DoCheck {
   }
 
 
+  openTaskDialog(task?: Task): void {
+  document.querySelector('app-root')?.setAttribute('inert', '');
+  this.modalVisible = true;
 
-/*******  0ff61784-9503-4517-ac05-4f8c63daf4f5  *******/
-  openTaskDialog() {
+  const dialogRef = this.dialog.open(AddTaskFormComponent, {
+    width: '400px',
+    data: task ? task : { listId: this.listId },
+  });
 
-      document.querySelector('app-root')?.setAttribute('inert', '');
-      this.modalVisible = true;
+  dialogRef.afterClosed().subscribe(result => {
+    document.querySelector('app-root')?.removeAttribute('inert');
+    this.modalVisible = false;
+    if (result) {
+      console.log('Dialog result:', result);
+    }
+  });
+}
 
 
-
-      document.querySelector('app-root')?.removeAttribute('inert');
-      this.modalVisible = false;
-
-    const dialogRef = this.dialog.open(AddTaskFormComponent, {
-      width: '400px',
-      data: { listId: this.listId}
+  confirmAction(task: Task): void {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '300px',
+      data: {
+        title: `Delete Task  ${task.title}`,
+        message: 'Are you sure you want to delete this task?',
+      },
     });
 
-    // Handle the closing of the dialog
     dialogRef.afterClosed().subscribe(result => {
-      console.log('result', result)
+      if (result) {
+        console.info('User confirmation', result);
+        if(task._id){
+          this.delTaskHandler.emit(task._id);
+        }
+      } else {
+        console.log('User canceled');
+      }
     });
   }
-
 
 }

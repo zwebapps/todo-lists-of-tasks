@@ -12,18 +12,26 @@
   </mat-toolbar>
   <div class="list-container" *ngIf="(todoLists$ | async) as lists; else noLists">
     <mat-accordion>
-      <mat-expansion-panel *ngFor="let list of lists" class="todo-card" (opened)="onPanelOpened(list)">
+      <mat-expansion-panel *ngFor="let list of lists; trackBy: trackByListId" class="todo-card" (opened)="onPanelOpened(list)">
         <mat-expansion-panel-header class="custom-header">
           <div class="header-title">{{ trimTitle(list.title) }}...</div>
           <div class="header-description">
             <mat-chip-set attr.aria-label="{{ list.title }}">
-              <mat-chip class="warn">
-                <span>{{ list?.totalTasks }} </span>
+              <mat-chip class="warn" *ngIf="selectedListId === list._id; else elseBlock">
+                <span>{{ patchTasksCount(selectedList$ | async) }}</span>
                 <mat-icon>format_list_numbered</mat-icon>
               </mat-chip>
+
+              <ng-template #elseBlock>
+                <mat-chip class="warn">
+                  <span>{{ list?.totalTasks }}</span>
+                  <mat-icon>format_list_numbered</mat-icon>
+                </mat-chip>
+              </ng-template>
+
               <mat-chip color="primary">
                 <span>
-                  {{ getCompletedTasksCount(selectedList$ | async, list) }}
+                  {{ patchCompletedTasksCount(selectedList$ | async, list) }}
                 </span>
                 <mat-icon>check_box_marked</mat-icon>
               </mat-chip>
@@ -31,7 +39,7 @@
           </div>
         </mat-expansion-panel-header>
         <div class="panel-content">
-          <app-todo-detail *ngIf="selectedListId === list._id" [listId]="list._id" (toggleTaskStatus)="onToggleTask($event)"></app-todo-detail>
+          <app-todo-detail *ngIf="selectedListId === list._id" [listId]="list._id" (toggleTaskStatus)="onToggleTask($event)" (delTaskHandler)="onDeleteTask($event)"></app-todo-detail>
         </div>
       </mat-expansion-panel>
     </mat-accordion>
