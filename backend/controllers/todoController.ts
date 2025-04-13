@@ -104,8 +104,8 @@ export const updateTask = async (req: Request, res: Response) => {
 export const getTasksByList = async (req: Request, res: Response) => {
   try {
     const { listId } = req.params;
-    const tasks = await Task.find({ todoListId: new ObjectId(listId) }).populate('todoListId');
-    console.log("getTaksByList", listId, tasks)
+    const tasks = await Task.find({ todoListId: new ObjectId(listId) });
+    console.log("getTasksByList", listId, tasks)
     res.status(200).json(tasks);
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch tasks' });
@@ -121,15 +121,15 @@ export const toggleTaskCompletion = async (req: Request, res: Response) => {
     if(db) {
       const task = await db.collection('tasks').findOne({ _id: new ObjectId(taskId) });
       if (!task) {
-        return res.status(404).json({ error: 'Task not found' });
-      }
+        return res.status(404).json({ error: 'Task not found' });      }
 
       const updatedTask = await db.collection('tasks').findOneAndUpdate(
         { _id: new ObjectId(taskId) },
         { $set: { completed: !task.completed } },
         { returnDocument: 'after' }
       );
-      res.status(200).json(task);
+      console.log('updatedTask', updateTask, task)
+      res.status(200).json(updatedTask);
     } else {
       return res.status(404).json({ error: 'Task Connection is invalide' });
     }

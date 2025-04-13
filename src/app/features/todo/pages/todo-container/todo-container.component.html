@@ -2,18 +2,14 @@
   <mat-toolbar color="primary">
     <span class="toolbar-title">Todo Lists</span>
     <span class="spacer"></span>
-
     <button
       mat-icon-button
       matTooltip="Add List"
       matTooltipPosition="below"
-      (click)="addList()"
-    >
+      (click)="addList()">
       <mat-icon>add</mat-icon>
     </button>
   </mat-toolbar>
-
-
   <div class="list-container" *ngIf="(todoLists$ | async) as lists; else noLists">
     <mat-accordion>
       <mat-expansion-panel *ngFor="let list of lists" class="todo-card" (opened)="onPanelOpened(list)">
@@ -27,12 +23,11 @@
               </mat-chip>
               <mat-chip color="primary">
                 <span>
-                  {{ list?.completedTasks }}
+                  {{ getCompletedTasksCount(selectedList$ | async, list) }}
                 </span>
                 <mat-icon>check_box_marked</mat-icon>
               </mat-chip>
             </mat-chip-set>
-
           </div>
         </mat-expansion-panel-header>
         <div class="panel-content">

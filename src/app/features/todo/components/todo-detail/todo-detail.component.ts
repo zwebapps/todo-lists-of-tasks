@@ -3,7 +3,6 @@ import { filter, map, Observable, switchMap, take, tap } from 'rxjs';
 import { Task, TodoList } from '../../models/todo.model';
 import { selectSelectedTodoList, selectTodoLists } from '../../../../store/selectors/todo.selectors';
 import { Store } from '@ngrx/store';
-import { TaskListComponent } from '../task-list/task-list.component';
 import { SharedModule } from '../../../../shared/shared.module';
 import { loadTasks, loadTodoLists, setSelectedTodoList, setSelectedTodoListById } from '../../../../store/actions/todo.actions';
 import { ActivatedRoute, Route } from '@angular/router';
@@ -24,13 +23,17 @@ export class TodoDetailComponent implements OnInit, OnChanges, DoCheck {
   @Output() toggleTaskStatus = new EventEmitter<string>();
   selectedListId: string | null = null;
   selectedTaskList$: Observable<TodoList | null> | null = null;
+  modalVisible: any
 
 
-  constructor(private store: Store, private route: ActivatedRoute, private dialog: MatDialog) {}
+  constructor(private store: Store, private route: ActivatedRoute, private dialog: MatDialog) {
+    // this.selectedTaskList$ = this.store.select(selectSelectedTodoList);
+  }
 
 
 
   ngDoCheck() {
+    // this.selectedTaskList$ = this.store.select(selectSelectedTodoList);
     console.log('ngDoCheck triggered');
   }
 
@@ -108,10 +111,20 @@ export class TodoDetailComponent implements OnInit, OnChanges, DoCheck {
 
 
 
+/*******  0ff61784-9503-4517-ac05-4f8c63daf4f5  *******/
   openTaskDialog() {
+
+      document.querySelector('app-root')?.setAttribute('inert', '');
+      this.modalVisible = true;
+
+
+
+      document.querySelector('app-root')?.removeAttribute('inert');
+      this.modalVisible = false;
+
     const dialogRef = this.dialog.open(AddTaskFormComponent, {
       width: '400px',
-      data: { listId: this.selectedListId }
+      data: { listId: this.listId}
     });
 
     // Handle the closing of the dialog

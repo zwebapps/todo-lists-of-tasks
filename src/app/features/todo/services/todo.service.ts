@@ -11,6 +11,7 @@ import { environment } from '../../../../environment';
 })
 export class TodoService {
   private todoLists$ = new BehaviorSubject<TodoList[]>([]);
+  private selectedList$ = new BehaviorSubject<TodoList>({} as TodoList);
   private tasks$: BehaviorSubject<Task[]> = new BehaviorSubject<Task[]>([]);
 
   private apiUrl = environment.apiUrl;
@@ -62,26 +63,30 @@ export class TodoService {
 
 
   addTask(listId: string, task: Omit<Task, '_id'>): Observable<Task> {
-    const taskUrl = `${this.apiUrl}/${listId}/tasks`;
+    const taskUrl = `${this.apiUrl}/lists/${listId}/tasks`;
     return this.http.post<Task>(taskUrl, task).pipe(
       map((addedTask) => {
-        const updatedLists = this.todoLists$.value.map((list) => {
-          if (list?._id === listId) {
-            return { ...list, tasks: [...list.tasks, addedTask] };
-          }
-          return list;
-        });
-        this.todoLists$.next(updatedLists);
+        const currentList = this.selectedList$.value;
+        console.log('selectedList$',this.selectedList$.value)
+        if (currentList && currentList._id === listId) {
+          const updatedList = {
+            ...currentList,
+            tasks: [...currentList.tasks, addedTask],
+          };
+          this.selectedList$.next(updatedList);
+        }
         return addedTask;
       }),
       catchError((error) => {
-        console.error('Error adding task:', error);
+        console.error('❌ Error adding task:', error);
         throw error;
       })
     );
   }
 
+
   toggleTask(taskId: string): Observable<Task> {
+    console.log('toggleTask', taskId)
     const taskUrl = `${this.apiUrl}/tasks/${taskId}/toggle`;
     return this.http.patch<Task>(taskUrl, {}).pipe(
       map((updatedTask: Task) => {

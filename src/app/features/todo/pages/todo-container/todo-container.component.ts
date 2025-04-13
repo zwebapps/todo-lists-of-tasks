@@ -1,13 +1,14 @@
-import { ChangeDetectionStrategy, Component, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
 import { addTask, addTodoList, clearSelectedList, loadTodoLists, setSelectedTodoList, toggleTaskStatus } from '../../../../store/actions/todo.actions';
 import { Store } from '@ngrx/store';
-import { Observable } from 'rxjs';
+import { combineLatest, map, Observable, take } from 'rxjs';
 import { selectSelectedTodoList, selectTodoLists } from '../../../../store/selectors/todo.selectors';
 import { TodoList } from '../../models/todo.model';
 import { SharedModule } from '../../../../shared/shared.module';
 import { Router } from '@angular/router';
 import { TodoDetailComponent } from "../../components/todo-detail/todo-detail.component";
 import { shortendString } from '../../../../shared/commonUtils';
+import { SnackbarService } from '../../../../shared/services/SnakeBarService';
 
 @Component({
   standalone: true,
@@ -22,6 +23,7 @@ export class TodoContainerComponent implements OnInit {
   selectedListId: string | null = null;
   todoLists$: Observable<TodoList[]> | null = null;
   selectedList: TodoList | null = null;
+  snackbar = inject(SnackbarService);
 
 
   constructor(private store: Store, private router: Router) {
@@ -82,8 +84,20 @@ export class TodoContainerComponent implements OnInit {
 
   onToggleTask(taskId: string) {
     this.store.dispatch(toggleTaskStatus({ taskId }));
+    this.selectedList$.subscribe(res => console.log('res',res))
+    this. snackbar.showFeedback('Task status updated successfully', "success");
   }
+
+  getCompletedTasksCount(selectedList: TodoList | null, list: TodoList): number {
+    if (selectedList && selectedList._id === list._id) {
+      return selectedList.completedTasks ?? 0;
+    }
+    return list.completedTasks ?? 0;
+  }
+
   trimTitle (title:string) {
    return shortendString(title);
   }
 }
+
+
