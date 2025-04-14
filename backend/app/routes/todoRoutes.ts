@@ -9,10 +9,12 @@ import {
   deleteTodoList,
   updateTask,
   updateTodoList,
+  todoHome,
 } from '../controllers/todoController';
 
 const router = express.Router();
 
+router.get('/', todoHome)
 router.get('/lists', getTodoLists);
 router.post('/lists', createTodoList);
 router.post('/lists/:listId/tasks', addTaskToList);

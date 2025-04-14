@@ -4,7 +4,6 @@ import Task from '../models/Task';
 import { ObjectId } from 'mongodb';
 // import { ObjectId } from 'bson';
 import mongoose from 'mongoose';
-import { connectDB, dbConnection } from '../db';
 
 export const createTodoList = async (req: Request, res: Response) => {
   try {
@@ -42,6 +41,10 @@ export const updateTodoList = async (req: Request, res: Response) => {
     res.status(500).json({ error: 'Failed to update todo list' });
   }
 };
+
+export const todoHome = async (_req: Request, res: Response) => {
+  res.status(200).json({message: 'Todo Home'});
+}
 
 export const getTodoLists = async (_req: Request, res: Response) => {
   try {

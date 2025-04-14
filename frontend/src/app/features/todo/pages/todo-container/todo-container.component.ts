@@ -131,7 +131,6 @@ export class TodoContainerComponent implements OnInit {
   }
 
   editList(list: TodoList) {
-    debugger
     const dialogRef = this.dialog.open(AddTodoListComponent, {
       width: '300px',
       data: {...list }
@@ -154,7 +153,6 @@ export class TodoContainerComponent implements OnInit {
   }
 
   deleteList(list: TodoList) {
-    debugger
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       width: '300px',
       data: {

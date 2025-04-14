@@ -52,7 +52,6 @@ export class TodoService {
     const newList = { title, tasks: [], totalTasks: 0, completedTasks: 0 };
     return this.http.post<TodoList>(taskUrl, newList).pipe(
       map((createdList) => {
-        debugger
         const normalizedList: TodoList = {
           ...createdList,
           tasks: createdList.tasks ?? [],
