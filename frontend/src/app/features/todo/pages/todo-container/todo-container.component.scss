@@ -1,8 +1,21 @@
-
-.mat-expansion-panel .buttons {
-  display: none;
+mat-expansion-panel-header {
+  mat-toolbar {
+    button {
+      margin-right: 10px;
+      z-index: 1;
+    }
+  }
+}
+@media (max-width: 599px) {
+  mat-expansion-panel-header {
+    mat-toolbar {
+      button {
+        margin-right: 2px;
+        height: 30px;
+        width: 30px;
+        z-index: 1;
+      }
+    }
+  }
 }
 
-.mat-expansion-panel.expanded .buttons {
-  display: block;
-}
