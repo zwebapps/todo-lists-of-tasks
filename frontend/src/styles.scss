@@ -1,21 +1,96 @@
-// /* You can add global styles to this file, and also import other style files */
-// @use '@angular/material' as mat;
-
-// html {
-//   color-scheme: light dark;
-//   @include mat.theme((
-//     accent: mat.$green-palette,
-//     warn: mat.$red-palette,
-//     is-dark: true,
-//     primary: mat.$violet-palette,
-//     typography: Roboto,
-//     density: 0
-//   ));
-// }
-
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap');
-
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+/* You can add global styles to this file, and also import other style files */
+@use 'sass:map';
+@use '@angular/material' as mat;
 
 
+// _variables.scss
+$violet-palette: (
+  50: #f7edff,
+  100: #ecdcff,
+  200: #d5baff,
+  300: #bf98ff,
+  400: #a974ff,
+  500: #944aff,
+  600: #7d00fa,
+  700: #6e00dc,
+  800: #5f00c0,
+  900: #5000a4,
+  A100: #270057,
+  A200: #42008a,
+  A400: #6e00dc,
+  A700: #7d00fa,
+);
+
+html {
+  @include mat.theme((
+    color: (
+    primary: mat.$violet-palette,
+    tertiary: mat.$orange-palette,
+    theme-type: light
+    ),
+    typography: Roboto,
+    density: 0
+  ));
+}
+
+
+html, body {
+  background: var(--mat-sys-surface);
+  color: var(--mat-sys-on-surface);
+  height: 100%;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  margin: 0;
+}
+
+
+.main-header {
+  background-color: map.get($violet-palette,900);
+  color: map.get($violet-palette, 50);
+  height: 300px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: Roboto;
+  font-size:x-large;
+}
+
+
+.top-navbar {
+  background:map.get($violet-palette, 400);
+  color: var(--mat-sys-primary);
+  width: 100%;
+  .nav-icon {
+    color: var(--mat-sys-primary);
+  }
+}
+
+
+.more-button {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.toolbar-spacer {
+  flex: 1 1 auto;
+}
+
+mat-expansion-panel  {
+  background-color: map.get($violet-palette,100);
+  mat-expansion-panel-header {
+    background-color: map.get($violet-palette,100);
+    .list-card-header {
+      background-color: map.get($violet-palette,100);
+      .toolbar-spacer {
+        flex: 1 1 auto;
+      }
+    }
+  }
+
+  mat-card {
+    margin: 15px 0 0 0;
+    background: var(--mat-sys-primary, 40);
+    color: var(--mat-sys-on-primary);
+  }
+
+}

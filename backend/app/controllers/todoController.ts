@@ -7,7 +7,6 @@ import mongoose from 'mongoose';
 
 export const createTodoList = async (req: Request, res: Response) => {
   try {
-    console.log('creating task')
     const { title } = req.body;
     const list = await TodoList.create({ title });
     res.status(201).json(list);

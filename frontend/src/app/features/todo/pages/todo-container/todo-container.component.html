@@ -1,70 +1,46 @@
-<div class="container">
-  <mat-toolbar color="primary">
-    <span class="toolbar-title">Todo Lists</span>
-    <span class="spacer"></span>
-    <button
-      mat-icon-button
-      matTooltip="Add List"
-      matTooltipPosition="below"
-      (click)="openTaskDialog()">
-      <mat-icon>add</mat-icon>
-    </button>
-  </mat-toolbar>
-  <div class="list-container" *ngIf="(todoLists$ | async) as lists; else noLists">
-    <mat-accordion>
-      <mat-expansion-panel *ngFor="let list of lists; trackBy: trackByListId" class="todo-card" (opened)="onPanelOpened(list)">
-        <mat-expansion-panel-header class="custom-header">
-          <div class="header-title">{{ trimTitle(list.title) }}...</div>
-          <div class="header-description">
-            <mat-chip-set attr.aria-label="{{ list.title }}">
-              <mat-chip class="warn" *ngIf="selectedListId === list._id; else elseBlock">
-                <span>{{ patchTasksCount(selectedList$ | async) }}</span>
-                <mat-icon>format_list_numbered</mat-icon>
-              </mat-chip>
-
-              <ng-template #elseBlock>
-                <mat-chip class="warn">
-                  <span>{{ list?.totalTasks }}</span>
-                  <mat-icon>format_list_numbered</mat-icon>
-                </mat-chip>
-              </ng-template>
-
-              <mat-chip color="primary">
-                <span>
-                  {{ patchCompletedTasksCount(selectedList$ | async, list) }}
-                </span>
-                <mat-icon>check_box_marked</mat-icon>
-              </mat-chip>
-
-            </mat-chip-set>
-          </div>
-        </mat-expansion-panel-header>
-        <div class="panel-content">
-            <mat-action-row>
-            <mat-chip-set attr.aria-label="{{ list.title }}">
-              <ng-template #elseBlock>
-                <mat-chip class="warn">
-                  <span>{{ list?.totalTasks }}</span>
-                  <mat-icon>format_list_numbered</mat-icon>
-                </mat-chip>
-              </ng-template>
-              <mat-chip color="primary" (click)="editList(list)">
-                <mat-icon>edit_square</mat-icon>
-              </mat-chip>
-              <mat-chip color="primary" (click)="deleteList(list)">
-                <mat-icon>
-                    delete
-                </mat-icon>
-              </mat-chip>
-            </mat-chip-set>
-          </mat-action-row>
-          <app-todo-detail *ngIf="selectedListId === list._id" [listId]="list._id" (toggleTaskStatus)="onToggleTask($event)" (delTaskHandler)="onDeleteTask($event)"></app-todo-detail>
-        </div>
-      </mat-expansion-panel>
-    </mat-accordion>
-  </div>
-
-  <ng-template #noLists>
-    <p class="empty">No Lists available.</p>
-  </ng-template>
+<div class="list-container" *ngIf="(todoLists$ | async) as lists; else noLists">
+  <mat-accordion>
+    <mat-expansion-panel *ngFor="let list of lists; trackBy: trackByListId"  (opened)="onPanelOpened(list)">
+    <mat-expansion-panel-header>
+      <mat-toolbar class="list-card-header">
+        <span>{{ trimTitle(list.title) }}...</span>
+        <span class="toolbar-spacer"></span>
+        <button mat-mini-fab class="nav-icon favorite-icon" aria-label="nav icon-button with heart icon" (click)="addTaskDialog()">
+          <mat-icon>add</mat-icon>
+        </button>
+        <button mat-mini-fab class="nav-icon favorite-icon" aria-label="nav icon-button with heart icon" *ngIf="selectedListId === list._id; else elseBlock">
+          <span>{{ patchTasksCount(selectedList$ | async) }}</span>
+          <mat-icon>format_list_bulleted_add</mat-icon>
+        </button>
+        <ng-template #elseBlock>
+        <button mat-mini-fab class="nav-icon favorite-icon" aria-label="nav icon-button with heart icon">
+          <span>{{ list?.totalTasks }}</span>
+          <mat-icon>format_list_bulleted_add</mat-icon>
+        </button>
+        </ng-template>
+        <button mat-mini-fab class="nav-icon favorite-icon" aria-label="nav icon-button with heart icon" *ngIf="selectedListId === list._id; else elseBlockCompleted">
+          <span>{{ patchCompletedTasksCount(selectedList$ | async, list) }}</span>
+          <mat-icon>check_circle</mat-icon>
+        </button>
+        <ng-template #elseBlockCompleted>
+          <button mat-mini-fab class="nav-icon favorite-icon" aria-label="nav icon-button with heart icon">
+            <span>{{ list?.completedTasks }}</span>
+            <mat-icon>check_circle</mat-icon>
+          </button>
+          </ng-template>
+        <button mat-mini-fab class="nav-icon favorite-icon" aria-label="nav icon-button with heart icon" (click)="editList(list)">
+          <mat-icon>edit_arrow_up</mat-icon>
+        </button>
+        <button mat-mini-fab class="nav-icon favorite-icon" aria-label="nav icon-button with heart icon" (click)="deleteList(list)">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </mat-toolbar>
+    </mat-expansion-panel-header>
+    <app-todo-detail *ngIf="selectedListId === list._id" [listId]="list._id" (toggleTaskStatus)="onToggleTask($event)" (delTaskHandler)="onDeleteTask($event)"></app-todo-detail>
+    <br>
+  </mat-expansion-panel>
+  </mat-accordion>
 </div>
+<ng-template #noLists>
+  <p class="empty">No Lists available.</p>
+</ng-template>

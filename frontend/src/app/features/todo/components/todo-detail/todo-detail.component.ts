@@ -1,11 +1,11 @@
 import { ChangeDetectionStrategy, Component, DoCheck, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
-import { filter, map, Observable, switchMap, take, tap } from 'rxjs';
+import { filter, map, Observable, take } from 'rxjs';
 import { Task, TodoList } from '../../models/todo.model';
 import { selectSelectedTodoList, selectTodoLists } from '../../../../store/selectors/todo.selectors';
 import { Store } from '@ngrx/store';
 import { SharedModule } from '../../../../shared/shared.module';
-import { loadTasks, loadTodoLists, setSelectedTodoList, setSelectedTodoListById } from '../../../../store/actions/todo.actions';
-import { ActivatedRoute, Route } from '@angular/router';
+import { loadTasks, loadTodoLists, setSelectedTodoListById } from '../../../../store/actions/todo.actions';
+import { ActivatedRoute } from '@angular/router';
 import { AddTaskFormComponent } from '../add-task-form/add-task-form.component';
 import { MatDialog } from '@angular/material/dialog';
 import { shortendString } from '../../../../shared/commonUtils';
@@ -29,13 +29,11 @@ export class TodoDetailComponent implements OnInit, OnChanges, DoCheck {
 
 
   constructor(private store: Store, private route: ActivatedRoute, private dialog: MatDialog) {
-    // this.selectedTaskList$ = this.store.select(selectSelectedTodoList);
   }
 
 
 
   ngDoCheck() {
-    // this.selectedTaskList$ = this.store.select(selectSelectedTodoList);
     console.log('ngDoCheck triggered');
   }
 
@@ -64,8 +62,11 @@ export class TodoDetailComponent implements OnInit, OnChanges, DoCheck {
     }
   }
 
-  ngAfterViewChecked() {
-    console.log('ngAfterViewChecked triggered');
+  ngAfterViewInit() {
+    this.selectedTaskList$?.subscribe((list) => {
+      // render the template here
+      console.log('List:', list);
+    });
   }
   handleListId(id: string): void {
     // Load todo lists first if not already loaded
@@ -105,6 +106,7 @@ export class TodoDetailComponent implements OnInit, OnChanges, DoCheck {
   }
 
   trackByTaskId(index: number, task: Task): string {
+    console.log(index, 'taks by id', task)
     if (!task._id) {
       throw new Error('Task must have a valid _id');
     }

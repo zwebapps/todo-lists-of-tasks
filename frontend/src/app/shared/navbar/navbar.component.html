@@ -1,0 +1,22 @@
+<mat-toolbar class="top-navbar">
+  <button mat-icon-button class="nav-icon" aria-label="nav icon-button with menu icon">
+    <mat-icon>menu</mat-icon>
+  </button>
+  <span>My App</span>
+  <span class="toolbar-spacer"></span>
+  <button
+      class="nav-icon add-icon"
+      mat-icon-button
+      matTooltip="Add List"
+      matTooltipPosition="below"
+      (click)="openTaskDialog()">
+      <mat-icon>add</mat-icon>
+    </button>
+  <button mat-icon-button class="nav-icon favorite-icon" >
+    <mat-icon>favorite</mat-icon>
+  </button>
+  <span>Todo lists</span>
+  <button mat-icon-button class="nav-icon" >
+    <mat-icon>share</mat-icon>
+  </button>
+</mat-toolbar>

@@ -1,0 +1,11 @@
+.top-navbar {
+  background: var(--mat-sys-primary);
+  color: var(--mat-sys-on-primary);
+  .nav-icon {
+    color: var(--mat-sys-on-primary);
+  }
+  width: 100%;
+  .toolbar-spacer {
+    flex: 1 1 auto;
+  }
+}

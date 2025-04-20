@@ -7,13 +7,21 @@ dotenv.config();
 
 const app = express();
 
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:4200',
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  preflightContinue: false,
+  optionsSuccessStatus: 200
+}));
 
 app.use(express.json());
 
 app.use(morgan('dev'));
+app.use('/api', (req, res, next) => {
+  console.log(`🔹 Request reached /api: ${req.method} ${req.url}`);
+  next();
+}, todoRoutes);
 
-app.use('/api', todoRoutes);
 
-module.exports = app;
+export default app;
 

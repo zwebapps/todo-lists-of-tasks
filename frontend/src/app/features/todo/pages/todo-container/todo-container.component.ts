@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal, viewChild } from '@angular/core';
 import { addTask, addTodoList, clearSelectedList, deleteTask, deleteTodoListSuccess, editTodoListSuccess, loadTodoLists, setSelectedTodoList, toggleTaskStatus } from '../../../../store/actions/todo.actions';
 import { Store } from '@ngrx/store';
 import { Observable} from 'rxjs';
@@ -13,6 +13,8 @@ import { AddTodoListComponent } from '../../components/add-todo-list/add-todo-li
 import { DialogService } from '../../../../shared/services/DialogService';
 import { TodoService } from '../../services/todo.service';
 import { ConfirmDialogComponent } from '../../../../shared/confirm-dialog/confirm-dialog.component';
+import { AddTaskFormComponent } from '../../components/add-task-form/add-task-form.component';
+import { MatAccordion } from '@angular/material/expansion';
 
 @Component({
   standalone: true,
@@ -30,7 +32,8 @@ export class TodoContainerComponent implements OnInit {
   snackbar = inject(SnackbarService);
   dialog = inject(DialogService);
   todoService = inject(TodoService);
-  modalVisible: any;
+  modalVisible:boolean = false;
+  accordion = viewChild.required(MatAccordion);
 
 
   constructor(private store: Store, private router: Router) {
@@ -128,6 +131,24 @@ export class TodoContainerComponent implements OnInit {
        console.log('Dialog result:', result);
      }
    });
+  }
+
+    addTaskDialog(task?: Task): void {
+    document.querySelector('app-root')?.setAttribute('inert', '');
+    this.modalVisible = true;
+
+    const dialogRef = this.dialog.open(AddTaskFormComponent, {
+      width: '400px',
+      data: task ? task : { listId: this.selectedListId },
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      document.querySelector('app-root')?.removeAttribute('inert');
+      this.modalVisible = false;
+      if (result) {
+        console.log('Dialog result:', result);
+      }
+    });
   }
 
   editList(list: TodoList) {

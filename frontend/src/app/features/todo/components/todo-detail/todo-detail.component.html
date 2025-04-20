@@ -1,48 +1,34 @@
-<div *ngIf="selectedTaskList$ | async as list" class="task-container">
-  <!-- Header with Add Task Button -->
+<div *ngIf="selectedTaskList$ | async as list">
   <div class="task-header">
-    <h2>{{ trimTitle(list.title)}}...</h2>
-    <div class="button-container">
-      <button mat-raised-button color="primary" (click)="openTaskDialog()">
-        <mat-icon>add</mat-icon>
-      </button>
-    </div>
+    <h2>{{list.title}}</h2>
+    <!-- <button mat-fab class="nav-icon favorite-icon" aria-label="nav icon-button with heart icon" (click)="openTaskDialog()">
+      <mat-icon>add</mat-icon>
+    </button> -->
   </div>
-
-  <!-- Task Cards -->
-  <div class="task-card-stack">
-    <mat-card
-      *ngFor="let task of list.tasks; trackBy: trackByTaskId"
-      class="task-card"
-      appearance="outlined"
-    >
-      <mat-card-title>{{ task.title }}</mat-card-title>
-      <mat-card-content>{{ task.description }}</mat-card-content>
-      <mat-card-actions>
-        <!-- Container for buttons -->
-        <div class="button-container">
-          <!-- Edit button -->
-          <button mat-icon-button (click)="editTask(task)">
-            <mat-icon>edit</mat-icon>
-          </button>
-
-          <!-- Delete button -->
-          <button mat-icon-button (click)="deleteTask(task)">
-            <mat-icon>delete</mat-icon>
-          </button>
-
-          <!-- Mark as done button -->
-          <button mat-icon-button (click)="onToggleTask(task)">
-            <mat-icon>{{
-              task.completed ? "check_circle" : "radio_button_unchecked"
-            }}</mat-icon>
-          </button>
-        </div>
-
-        <!-- <span [class.completed]="task.completed">{{
-          task.completed ? "Completed" : "Pending"
-        }}</span> -->
+  <div class="task-list"  *ngFor="let t of list.tasks; trackBy: trackByTaskId" >
+    <mat-card appearance="outlined">
+      <mat-card-header>
+        <mat-card-title>{{t.title}} </mat-card-title>
+        <mat-card-subtitle>{{t.title}}</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-actions align="end">
+        <button mat-icon-button class="nav-icon favorite-icon" aria-label="nav icon-button with heart icon" (click)="editTask(t)">
+          <mat-icon>edit_square</mat-icon>
+        </button>
+        <button mat-icon-button class="nav-icon favorite-icon" aria-label="nav icon-button with heart icon" (click)="deleteTask(t)">
+          <mat-icon>delete_forever</mat-icon>
+        </button>
+        <button mat-icon-button (click)="onToggleTask(t)">
+          <mat-icon>{{
+            t.completed ? "check_circle" : "radio_button_unchecked"
+          }}</mat-icon>
+        </button>
       </mat-card-actions>
     </mat-card>
   </div>
+  <div class="more-button" *ngIf="list.tasks.length > 10">
+    <button mat-mini-fab aria-label="Example icon button with a menu icon">
+      <mat-icon>arrow_right_alt</mat-icon>
+    </button>
 </div>
+  </div>
